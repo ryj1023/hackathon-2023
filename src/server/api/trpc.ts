@@ -19,6 +19,7 @@ import { type Session } from "next-auth";
 
 import { getServerAuthSession } from "~/server/auth";
 import { prisma } from "~/server/db";
+import { openai } from "~/server/openai";
 
 type CreateContextOptions = {
   session: Session | null;
@@ -38,6 +39,7 @@ const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     prisma,
+    openai,
   };
 };
 
@@ -68,6 +70,7 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
+
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
   transformer: superjson,
