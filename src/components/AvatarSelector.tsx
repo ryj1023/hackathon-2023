@@ -46,14 +46,14 @@ const AvatarSelector = ({ type, name, onSelect }: AvatarSelectorProps) => {
     return url;
   };
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (e) => {
+    e?.preventDefault();
     const [url] = await imageGenerators[type].mutateAsync({
-      name,
+      name: name || "John",
       samples: 1,
       backgroundColor: color,
     });
-    if (url) selectUrl(url);
-
+    if (url) selectUrl(url)(e);
     await avatars.refetch();
   };
 
@@ -105,7 +105,7 @@ const AvatarSelector = ({ type, name, onSelect }: AvatarSelectorProps) => {
               <button
                 className={clsx("btn-primary btn", { loading: isLoading })}
                 disabled={isLoading}
-                onClick={() => void handleGenerate()}
+                onClick={(e) => void handleGenerate(e)}
               >
                 Generate
               </button>

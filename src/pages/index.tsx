@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { type Language } from "~/server/api/schemas";
 import AvatarSelector from "~/components/AvatarSelector";
+// import BackgroundImage from "~/images/image-background.png";
+import Image from "next/image";
 
 const RogerStoryTestPage = () => {
   const [language, setLanguage] = useState<Language>("TypeScript");
   const [heroName, setHeroName] = useState<string>("");
-  const [heroImage, setHeroImage] = useState<string>("");
+  const [heroImage, setHeroImage] = useState<string>(
+    "/images/avatars/Green Thumb/img-K1HK0jB5CDU95SeI8tCxOx1m.png"
+  );
   const [villainName, setVillainName] = useState<string>("");
-  const [villainImage, setVillainImage] = useState<string>("");
+  const [villainImage, setVillainImage] = useState<string>(
+    "/images/avatars/MODOK/img-J7lP2m93lbDITd1fiqKcJAgW.png"
+  );
   const [scene, setScene] = useState<string>("");
 
   console.log("heroImage", heroImage);
@@ -24,9 +30,17 @@ const RogerStoryTestPage = () => {
   return (
     <div
       className="h-100 flex items-center justify-center"
-      style={{ height: "100vh" }}
+      style={{
+        height: "100vh",
+      }}
     >
-      <div className="m-5 flex items-center justify-center p-5">
+      <Image
+        src="/images/hero-background.png"
+        layout="fill"
+        objectFit="cover"
+        quality={100}
+      />
+      <div className="card m-5 flex items-center justify-center bg-white p-5">
         <form action="/questions" method="post">
           <h1 className="mb-2 text-3xl">Create your story</h1>
           <div className="flex flex-col">
@@ -49,7 +63,7 @@ const RogerStoryTestPage = () => {
                   <AvatarSelector
                     type="Hero"
                     onSelect={setHeroImage}
-                    name={heroImage}
+                    name={heroName}
                   />
                 </div>
               </div>
@@ -72,7 +86,7 @@ const RogerStoryTestPage = () => {
                   <AvatarSelector
                     type="Villain"
                     onSelect={setVillainImage}
-                    name={villainImage}
+                    name={villainName}
                   />
                 </div>
               </div>

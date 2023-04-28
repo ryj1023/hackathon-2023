@@ -38,6 +38,10 @@ const Questions = ({ promptData }) => {
   const createNewStory = api.storyTeller.new.useMutation();
   const nextQuestion = api.questioner.question.useMutation();
 
+  const newStoryLoading = createNewStory.isLoading;
+  const nextStoryIsLoading = next.isLoading;
+  const nextQuestionIsLoading = nextQuestion.isLoading;
+
   const getStoryOutcome = (isCorrectAnswer: boolean) => {
     const wrongAnswerCount = allAnswers.filter((a) => !a);
     if (wrongAnswerCount.length === 2) return "defeat";
@@ -107,98 +111,87 @@ const Questions = ({ promptData }) => {
 
   return (
     <div className="_flex m-5 items-center justify-center p-5">
-      {/* <button onClick={executeScroll}> Click to scroll </button> */}
       <div className="align-center my-5 flex justify-center">
         <div>
+          <h1 className="font-bold">{heroName}</h1>
           <Image src={heroImage} width={300} height={300} alt="avatar" />
         </div>
         <div>
           <Image src={"/images/VS.png"} width={300} height={300} alt="avatar" />
         </div>
         <div>
+          <h1 className="font-bold">{villainName}</h1>
           <Image src={villainImage} width={300} height={300} alt="avatar" />
         </div>
       </div>
-      <div style={{ maxHeight: "100px", overflow: "scroll" }}>
-        <p>
-          Electric Man had arrived in Egypt to stop Cool Story, Bro from
-          stealing valuable artifacts from the ancient pyramids. As soon as Cool
-          Story, Bro saw him, he scoffed and said, "What a joke. You think you
-          can stop me, Electric Man? I've got powers you couldn't even imagine."
-          Electric Man just cracked his knuckles and said, "I don't need to
-          imagine, I've got plenty of power myself." And with that, the two
-          began to battle fiercely in the desert sand.
-        </p>
-        <p>
-          Electric Man had arrived in Egypt to stop Cool Story, Bro from
-          stealing valuable artifacts from the ancient pyramids. As soon as Cool
-          Story, Bro saw him, he scoffed and said, "What a joke. You think you
-          can stop me, Electric Man? I've got powers you couldn't even imagine."
-          Electric Man just cracked his knuckles and said, "I don't need to
-          imagine, I've got plenty of power myself." And with that, the two
-          began to battle fiercely in the desert sand.
-        </p>
-        <p>
-          Electric Man had arrived in Egypt to stop Cool Story, Bro from
-          stealing valuable artifacts from the ancient pyramids. As soon as Cool
-          Story, Bro saw him, he scoffed and said, "What a joke. You think you
-          can stop me, Electric Man? I've got powers you couldn't even imagine."
-          Electric Man just cracked his knuckles and said, "I don't need to
-          imagine, I've got plenty of power myself." And with that, the two
-          began to battle fiercely in the desert sand.
-        </p>
-        <p>
-          Electric Man had arrived in Egypt to stop Cool Story, Bro from
-          stealing valuable artifacts from the ancient pyramids. As soon as Cool
-          Story, Bro saw him, he scoffed and said, "What a joke. You think you
-          can stop me, Electric Man? I've got powers you couldn't even imagine."
-          Electric Man just cracked his knuckles and said, "I don't need to
-          imagine, I've got plenty of power myself." And with that, the two
-          began to battle fiercely in the desert sand.
-        </p>
-        {/* <div>{allAnswers.length}</div> */}
-        {/* <ul>
-          {displayText.map((text, i) => (
-            <li key={i} className="mb-5">
-              {text}
-            </li>
-          ))}
-        </ul> */}
-        <div style={{ float: "left", clear: "both" }} ref={myRef}></div>
-      </div>
       <div>
-        <div className="my-3 text-xl font-bold">{question?.question}</div>
-        <ul>
-          {question?.options?.map((option, i) => (
-            <li key={i} className="mb-5">
-              <pre>{option}</pre>
-            </li>
-          ))}
-        </ul>
-        <div>{question?.answer}</div>
-        <button
-          className="btn-primary btn"
-          onClick={() =>
-            void handleNext(
-              getStoryOutcome(question?.answer === question?.answer)
-            )
-          }
-        >
-          Correct Answer
-        </button>
-        <button
-          className="btn-primary btn"
-          onClick={() =>
-            void handleNext(
-              getStoryOutcome(question?.answer !== question?.answer)
-            )
-          }
-        >
-          Incorrect Answer
-        </button>
-        <Link className="btn-primary btn" type="button" href="/create-story">
-          Play again?
-        </Link>
+        {newStoryLoading ? (
+          <div className="flex justify-center">
+            <div className="mt-1">
+              <progress className="progress w-56 "></progress>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div
+              className="p-2"
+              style={{
+                height: "200px",
+                overflow: "scroll",
+                background: "black",
+                color: "white",
+                borderRadius: 8,
+              }}
+            >
+              <div>{allAnswers.length}</div>
+              <ul>
+                {displayText.map((text, i) => (
+                  <li key={i} className="mb-5">
+                    {text}
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-5">
+                <progress className="progress progress-info flex w-56 justify-center"></progress>
+              </div>
+              <div style={{ float: "left", clear: "both" }} ref={myRef}></div>
+            </div>
+            <div>
+              <div className="my-3 text-xl font-bold">{question?.question}</div>
+              <ul>
+                {question?.options?.map((option, i) => (
+                  <li key={i} className="mb-5">
+                    <pre>{option}</pre>
+                  </li>
+                ))}
+              </ul>
+              <div>{question?.answer}</div>
+              <button
+                className="btn-primary btn"
+                onClick={() =>
+                  void handleNext(
+                    getStoryOutcome(question?.answer === question?.answer)
+                  )
+                }
+              >
+                Correct Answer
+              </button>
+              <button
+                className="btn-primary btn"
+                onClick={() =>
+                  void handleNext(
+                    getStoryOutcome(question?.answer !== question?.answer)
+                  )
+                }
+              >
+                Incorrect Answer
+              </button>
+              <Link className="btn-primary btn" type="button" href="/">
+                Play again?
+              </Link>
+            </div>
+          </>
+        )}{" "}
       </div>
     </div>
   );
@@ -209,9 +202,8 @@ export async function getServerSideProps({ req }) {
     heroName: "Iron Man",
     villainName: "Thanos",
     scene: "Desert",
-    heroImage: "/images/avatars/MODOK/img-J7lP2m93lbDITd1fiqKcJAgW.png",
-    villainImage:
-      "/images/avatars/Green Thumb/img-K1HK0jB5CDU95SeI8tCxOx1m.png",
+    villainImage: "/images/avatars/MODOK/img-J7lP2m93lbDITd1fiqKcJAgW.png",
+    heroImage: "/images/avatars/Green Thumb/img-K1HK0jB5CDU95SeI8tCxOx1m.png",
     language: "TypeScript",
   };
   if (req.method == "POST") {
