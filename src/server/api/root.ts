@@ -1,6 +1,7 @@
 import { createTRPCRouter } from "~/server/api/trpc";
 import { storyTellerRouter } from "./routers/storyTeller";
 import { questionerRouter } from "./routers/questioner";
+import { imagesRouter } from "./routers/images";
 
 /**
  * This is the primary router for your server.
@@ -10,6 +11,7 @@ import { questionerRouter } from "./routers/questioner";
 export const appRouter = createTRPCRouter({
   storyTeller: storyTellerRouter,
   questioner: questionerRouter,
+  images: imagesRouter,
 });
 
 // export type definition of API
