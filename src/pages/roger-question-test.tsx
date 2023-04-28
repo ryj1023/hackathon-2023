@@ -1,3 +1,4 @@
+import clsx from "clsx";
 import { useState } from "react";
 import { type QuestionReturn } from "~/server/api/routers/questioner";
 import { type Language } from "~/server/api/schemas";
@@ -56,8 +57,9 @@ const RogerStoryTestPage = () => {
         </select>
 
         <button
-          className="btn btn-primary"
+          className={clsx('btn btn-primary', { loading: nextQuestion.isLoading })}
           onClick={() => void handleNextQuestion()}
+          disabled={nextQuestion.isLoading}
         >
           Next Question
         </button>
