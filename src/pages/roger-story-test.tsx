@@ -52,7 +52,7 @@ const RogerStoryTestPage = () => {
       <div className="flex flex-col">
         <h2>Hero</h2>
         <input className="input input-bordered" value={heroName} onChange={(e) => setHeroName(e.target.value)} />
-        <h2>Villan</h2>
+        <h2>Villain</h2>
         <input className="input input-bordered" value={villainName} onChange={(e) => setVillainName(e.target.value)} />
         <h2>Scene</h2>
         <input className="input input-bordered" value={scene} onChange={(e) => setScene(e.target.value)} />
