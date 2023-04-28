@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import Image from "next/image";
 import getRawBody from "raw-body";
 import { type OpenAIMessage, type StoryOutcome } from "~/server/api/schemas";
 import Link from "next/link";
@@ -9,9 +10,11 @@ import { api } from "~/utils/api";
 type Language = "TypeScript" | "JavaScript" | "Python" | "C#" | "Haskell";
 
 type storyPromptData = {
-  heroName?: string;
-  villainName?: string;
-  scene?: string;
+  heroName: string;
+  villainName: string;
+  scene: string;
+  heroImage: string;
+  villainImage: string;
   language: Language;
 };
 
@@ -27,7 +30,8 @@ const Questions = ({ promptData }) => {
   const [story, setStory] = useState<OpenAIMessage[]>([]);
   const [question, setQuestion] = useState<QuestionReturn | undefined>();
   const [difficulty, setDifficulty] = useState<number>(1);
-  const { heroName, villainName, scene, language } = promptData;
+  const { heroName, villainName, scene, language, heroImage, villainImage } =
+    promptData;
   const utils = api.useContext();
   const tokens = api.storyTeller.tokensUsed.useQuery();
   const next = api.storyTeller.next.useMutation();
@@ -103,16 +107,63 @@ const Questions = ({ promptData }) => {
 
   return (
     <div className="_flex m-5 items-center justify-center p-5">
-      <button onClick={executeScroll}> Click to scroll </button>
+      {/* <button onClick={executeScroll}> Click to scroll </button> */}
+      <div className="align-center my-5 flex justify-center">
+        <div>
+          <Image src={heroImage} width={300} height={300} alt="avatar" />
+        </div>
+        <div>
+          <Image src={"/images/VS.png"} width={300} height={300} alt="avatar" />
+        </div>
+        <div>
+          <Image src={villainImage} width={300} height={300} alt="avatar" />
+        </div>
+      </div>
       <div style={{ maxHeight: "100px", overflow: "scroll" }}>
-        <div>{allAnswers.length}</div>
-        <ul>
+        <p>
+          Electric Man had arrived in Egypt to stop Cool Story, Bro from
+          stealing valuable artifacts from the ancient pyramids. As soon as Cool
+          Story, Bro saw him, he scoffed and said, "What a joke. You think you
+          can stop me, Electric Man? I've got powers you couldn't even imagine."
+          Electric Man just cracked his knuckles and said, "I don't need to
+          imagine, I've got plenty of power myself." And with that, the two
+          began to battle fiercely in the desert sand.
+        </p>
+        <p>
+          Electric Man had arrived in Egypt to stop Cool Story, Bro from
+          stealing valuable artifacts from the ancient pyramids. As soon as Cool
+          Story, Bro saw him, he scoffed and said, "What a joke. You think you
+          can stop me, Electric Man? I've got powers you couldn't even imagine."
+          Electric Man just cracked his knuckles and said, "I don't need to
+          imagine, I've got plenty of power myself." And with that, the two
+          began to battle fiercely in the desert sand.
+        </p>
+        <p>
+          Electric Man had arrived in Egypt to stop Cool Story, Bro from
+          stealing valuable artifacts from the ancient pyramids. As soon as Cool
+          Story, Bro saw him, he scoffed and said, "What a joke. You think you
+          can stop me, Electric Man? I've got powers you couldn't even imagine."
+          Electric Man just cracked his knuckles and said, "I don't need to
+          imagine, I've got plenty of power myself." And with that, the two
+          began to battle fiercely in the desert sand.
+        </p>
+        <p>
+          Electric Man had arrived in Egypt to stop Cool Story, Bro from
+          stealing valuable artifacts from the ancient pyramids. As soon as Cool
+          Story, Bro saw him, he scoffed and said, "What a joke. You think you
+          can stop me, Electric Man? I've got powers you couldn't even imagine."
+          Electric Man just cracked his knuckles and said, "I don't need to
+          imagine, I've got plenty of power myself." And with that, the two
+          began to battle fiercely in the desert sand.
+        </p>
+        {/* <div>{allAnswers.length}</div> */}
+        {/* <ul>
           {displayText.map((text, i) => (
             <li key={i} className="mb-5">
               {text}
             </li>
           ))}
-        </ul>
+        </ul> */}
         <div style={{ float: "left", clear: "both" }} ref={myRef}></div>
       </div>
       <div>
@@ -155,9 +206,12 @@ const Questions = ({ promptData }) => {
 
 export async function getServerSideProps({ req }) {
   const promptData: storyPromptData = {
-    heroName: "",
-    villainName: "",
-    scene: "",
+    heroName: "Iron Man",
+    villainName: "Thanos",
+    scene: "Desert",
+    heroImage: "/images/avatars/MODOK/img-J7lP2m93lbDITd1fiqKcJAgW.png",
+    villainImage:
+      "/images/avatars/Green Thumb/img-K1HK0jB5CDU95SeI8tCxOx1m.png",
     language: "TypeScript",
   };
   if (req.method == "POST") {
