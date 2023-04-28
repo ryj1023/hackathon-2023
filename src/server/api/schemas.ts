@@ -8,7 +8,7 @@ export const openAIMessageSchema = z.object({
 
 export type OpenAIMessage = z.infer<typeof openAIMessageSchema>;
 
-export const storyOutcomeSchema = z.enum(['success', 'failure', 'complete', 'defeat']);
+export const storyOutcomeSchema = z.enum(['success', 'failure', 'complete', 'victory', 'defeat']);
 
 export type StoryOutcome = z.infer<typeof storyOutcomeSchema>;
 

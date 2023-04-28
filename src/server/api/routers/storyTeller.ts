@@ -29,8 +29,8 @@ export const storyTellerRouter = createTRPCRouter({
     }))
     .mutation(async ({ input, ctx }) => {
       const systemMessage = `You are a storyteller.
-You are telling a story about a hero named ${input.heroName} and a villan named ${input.villainName}.
-The hero and villan are fighting.
+You are telling a story about a hero named ${input.heroName} and a villain named ${input.villainName}.
+The hero and villain are fighting.
 Each response should be a short part of the battle.
 Do not ask questions.
 Make sure the story doesn't end until either one is defeated.`;
@@ -61,16 +61,17 @@ Make sure the story doesn't end until either one is defeated.`;
 
       switch(input.outcome) {
         case 'success':
-          nextMessagePrompt = 'The hero is successful in damaging the villan';
+          nextMessagePrompt = 'The hero is successful in damaging the villain. Tell me the next part of the battle.';
           break;
         case 'failure':
-          nextMessagePrompt = 'The villan damages the hero';
+          nextMessagePrompt = 'The villain damages the hero. Tell me the next part of the battle.';
           break;
         case 'complete':
-          nextMessagePrompt = 'The hero defeats the villan';
+        case 'victory':
+          nextMessagePrompt = 'The hero defeats the villain. Complete the story.';
           break;
         case 'defeat':
-          nextMessagePrompt = 'The hero is defeated by the villan';
+          nextMessagePrompt = 'The hero is defeated by the villain. Complete the story.';
           break;
       }
 
