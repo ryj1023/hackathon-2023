@@ -3,6 +3,7 @@ import Image from "next/image";
 import myImage from "../../public/images/hero-background.png";
 import getRawBody from "raw-body";
 import { type OpenAIMessage, type StoryOutcome } from "~/server/api/schemas";
+import QuestionDisplay from "~/components/QuestionDisplay";
 import Link from "next/link";
 
 import { api } from "~/utils/api";
@@ -58,8 +59,21 @@ const Questions = ({ promptData }) => {
   const nextQuestion = api.questioner.question.useMutation();
 
   const newStoryLoading = createNewStory.isLoading;
-  const nextStoryIsLoading = next.isLoading;
-  const nextQuestionIsLoading = nextQuestion.isLoading;
+  // const nextStoryIsLoading = next.isLoading;
+  // const nextQuestionIsLoading = nextQuestion.isLoading;
+
+  const handleCorrect = () => {
+    void handleNext(getStoryOutcome(true));
+    void getQuestionData();
+  };
+  const handleIncorrect = () => {
+    void handleNext(getStoryOutcome(false));
+    void getQuestionData();
+  };
+
+  const handleFinshedAnimation = () => {
+    console.log("FINISHED ANIMATION!");
+  };
 
   const getStoryOutcome = (isCorrectAnswer: boolean) => {
     const wrongAnswerCount = allAnswers.filter((a) => !a);
@@ -107,11 +121,14 @@ const Questions = ({ promptData }) => {
         language,
         difficulty,
       });
+      console.log("question1", question);
       setQuestion(question);
     } catch (err) {
       console.log("err", err);
     }
   };
+
+  console.log("question", question);
 
   useEffect(() => {
     void getInitialStoryData();
@@ -192,7 +209,7 @@ const Questions = ({ promptData }) => {
                 </div>
                 <div style={{ float: "left", clear: "both" }} ref={myRef}></div>
               </div>
-              <div className="w-50 bg-white">
+              {/* <div className="w-50 bg-white">
                 <div className="my-3 text-xl font-bold">
                   {question?.question}
                 </div>
@@ -246,6 +263,16 @@ const Questions = ({ promptData }) => {
                 <Link className="btn-primary btn" type="button" href="/">
                   Play again?
                 </Link>
+              </div> */}
+              <div>
+                {question && (
+                  <QuestionDisplay
+                    question={question}
+                    onCorrect={handleCorrect}
+                    onIncorrect={handleIncorrect}
+                    onFinshedAnimation={handleFinshedAnimation}
+                  />
+                )}
               </div>
             </>
           )}{" "}
