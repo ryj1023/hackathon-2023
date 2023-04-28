@@ -3,11 +3,10 @@ import { type OpenAIMessage, type StoryOutcome } from "~/server/api/schemas";
 
 import { api } from "~/utils/api";
 
-
 const OUTCOMES: [StoryOutcome, string][] = [
   ["success", "Success"],
   ["failure", "Failure"],
-  ["complete", "Complete"],
+  ["victory", "Victory"],
   ["defeat", "Defeat"],
 ];
 
