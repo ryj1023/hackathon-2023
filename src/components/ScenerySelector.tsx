@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { useRef, useState } from "react";
 import { api } from "~/utils/api";
-import clsx from 'clsx';
+import clsx from "clsx";
 
 interface ScenerySelectorProps {
   label: string;
@@ -21,36 +21,44 @@ const ScenerySelector = ({ label, onSelect }: ScenerySelectorProps) => {
 
   const existingImages = scenery.data ?? [];
 
-  const selectUrl = (url: string) => () => {
-    console.log('selecting', url)
+  const selectUrl = (url: string) => (e) => {
     setSelectedScenery(url);
     onSelect(url);
-    console.log(toggleRef.current)
     toggleRef.current?.click();
-  }
+    e?.preventDefault();
+    return url;
+  };
 
-  const handleGenerate = async () => {
+  const handleGenerate = async (e) => {
+    e?.preventDefault();
     const [url] = await sceneryGenerator.mutateAsync({
       label,
     });
 
-    console.log('generated', url)
-
-    if (url) selectUrl(url)();
+    if (url) selectUrl(url)(e);
     await scenery.refetch();
   };
 
   return (
     <div>
-      <div className="flex flex-col my-1">
-        <div className="border border-gray-500 rounded-t-lg h-64 w-64 overflow-hidden">
-          {selectedScenery
-            ? <Image src={selectedScenery} width={256} height={256} alt="selected avatar" />
-            : <div className="text-gray-500 text-9xl h-64 w-64 flex items-center justify-center">?</div>}
+      <div className="my-1 flex flex-col">
+        <div className="h-64 w-64 overflow-hidden rounded-t-lg border border-gray-500">
+          {selectedScenery ? (
+            <Image
+              src={selectedScenery}
+              width={256}
+              height={256}
+              alt="selected avatar"
+            />
+          ) : (
+            <div className="flex h-64 w-64 items-center justify-center text-9xl text-gray-500">
+              ?
+            </div>
+          )}
         </div>
         <label
           htmlFor={formId}
-          className="btn btn-xs btn-primary w-64 rounded-t-none"
+          className="btn-primary btn-xs btn w-64 rounded-t-none"
           ref={toggleRef}
         >
           Select Scenery
@@ -63,9 +71,9 @@ const ScenerySelector = ({ label, onSelect }: ScenerySelectorProps) => {
             <h2 className="text-xl">Generate New Scenery for {label}</h2>
             <div className="flex flex-row gap-3">
               <button
-                className={clsx('btn btn-primary', { loading: isLoading })}
+                className={clsx("btn-primary btn", { loading: isLoading })}
                 disabled={isLoading}
-                onClick={() => void handleGenerate()}
+                onClick={(e) => void handleGenerate(e)}
               >
                 Generate
               </button>
@@ -74,10 +82,10 @@ const ScenerySelector = ({ label, onSelect }: ScenerySelectorProps) => {
           <h3 className="text-xl">Existing Scenery:</h3>
           <div className="flex flex-row flex-wrap gap-3">
             {scenery.isLoading && <p>Loading...</p>}
-            {existingImages.map(url => (
+            {existingImages.map((url) => (
               <button
                 key={url}
-                className="p-1 border-4 border-transparent rounded transition hover:bg-gray-400 hover:border-primary"
+                className="rounded border-4 border-transparent p-1 transition hover:border-primary hover:bg-gray-400"
                 onClick={selectUrl(url)}
                 disabled={isLoading}
               >
@@ -88,7 +96,7 @@ const ScenerySelector = ({ label, onSelect }: ScenerySelectorProps) => {
         </label>
       </label>
     </div>
-  )
-}
+  );
+};
 
 export default ScenerySelector;

@@ -1,13 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
+import myImage from "../../public/images/hero-background.png";
 import getRawBody from "raw-body";
 import { type OpenAIMessage, type StoryOutcome } from "~/server/api/schemas";
 import Link from "next/link";
-import { useRouter } from "next/router";
 
 import { api } from "~/utils/api";
 
 type Language = "TypeScript" | "JavaScript" | "Python" | "C#" | "Haskell";
+
+console.log("myImage", myImage.src);
 
 type storyPromptData = {
   heroName: string;
@@ -15,6 +17,7 @@ type storyPromptData = {
   scene: string;
   heroImage: string;
   villainImage: string;
+  sceneryImage: string;
   language: Language;
 };
 
@@ -25,13 +28,29 @@ const OUTCOMES: [StoryOutcome, string][] = [
   ["defeat", "Defeat"],
 ];
 
+const answerMap = [
+  { value: "A" },
+  { value: "B" },
+  { value: "C" },
+  { value: "D" },
+];
+
 const Questions = ({ promptData }) => {
   const [allAnswers, setAllAnswers] = useState<boolean[]>([]);
   const [story, setStory] = useState<OpenAIMessage[]>([]);
   const [question, setQuestion] = useState<QuestionReturn | undefined>();
+  const [answer, setAnswer] = useState<string>();
+
   const [difficulty, setDifficulty] = useState<number>(1);
-  const { heroName, villainName, scene, language, heroImage, villainImage } =
-    promptData;
+  const {
+    heroName,
+    villainName,
+    scene,
+    language,
+    heroImage,
+    villainImage,
+    sceneryImage,
+  } = promptData;
   const utils = api.useContext();
   const tokens = api.storyTeller.tokensUsed.useQuery();
   const next = api.storyTeller.next.useMutation();
@@ -57,7 +76,6 @@ const Questions = ({ promptData }) => {
   };
 
   const handleNext = async (outcome) => {
-    console.log("outcome", outcome);
     // nothing to do here...
     if (!outcome) return;
     const nextStory = await next.mutateAsync({
@@ -100,6 +118,12 @@ const Questions = ({ promptData }) => {
     void getQuestionData(difficulty);
   }, []);
 
+  useEffect(() => {
+    document.body.style.background = `url(${sceneryImage}) no-repeat`;
+    document.body.style.height = "100vh";
+    document.body.style.backgroundSize = "cover";
+  }, [sceneryImage]);
+
   const displayText = story
     .filter((m) => m.role === "assistant")
     .map((m) => m.content);
@@ -110,88 +134,122 @@ const Questions = ({ promptData }) => {
     myRef.current.scrollIntoView({ behavior: "smooth" });
 
   return (
-    <div className="_flex m-5 items-center justify-center p-5">
-      <div className="align-center my-5 flex justify-center">
-        <div>
-          <h1 className="font-bold">{heroName}</h1>
-          <Image src={heroImage} width={300} height={300} alt="avatar" />
-        </div>
-        <div>
-          <Image src={"/images/VS.png"} width={300} height={300} alt="avatar" />
-        </div>
-        <div>
-          <h1 className="font-bold">{villainName}</h1>
-          <Image src={villainImage} width={300} height={300} alt="avatar" />
-        </div>
-      </div>
-      <div>
-        {newStoryLoading ? (
-          <div className="flex justify-center">
-            <div className="mt-1">
-              <progress className="progress w-56 "></progress>
-            </div>
+    <div>
+      <div className="_flex ml-5 mr-5 items-center justify-center p-5">
+        <div className="align-center mb-2 flex justify-center">
+          {/* <Image
+            src="/images/hero-background.png"
+            layout="fill"
+            objectFit="cover"
+            quality={100}
+          /> */}
+          <div>
+            <h1 className="font-bold">{heroName}</h1>
+            <Image src={heroImage} width={300} height={300} alt="avatar" />
           </div>
-        ) : (
-          <>
-            <div
-              className="p-2"
-              style={{
-                height: "200px",
-                overflow: "scroll",
-                background: "black",
-                color: "white",
-                borderRadius: 8,
-              }}
-            >
-              <div>{allAnswers.length}</div>
-              <ul>
-                {displayText.map((text, i) => (
-                  <li key={i} className="mb-5">
-                    {text}
-                  </li>
-                ))}
-              </ul>
-              <div className="mt-5">
-                <progress className="progress progress-info flex w-56 justify-center"></progress>
+          <div>
+            <Image
+              src={"/images/VS.png"}
+              width={300}
+              height={300}
+              alt="avatar"
+            />
+          </div>
+          <div>
+            <h1 className="font-bold">{villainName}</h1>
+            <Image src={villainImage} width={300} height={300} alt="avatar" />
+          </div>
+        </div>
+        <div>
+          {newStoryLoading ? (
+            <div className="flex justify-center">
+              <div className="mt-1">
+                <progress className="progress w-56 "></progress>
               </div>
-              <div style={{ float: "left", clear: "both" }} ref={myRef}></div>
             </div>
-            <div>
-              <div className="my-3 text-xl font-bold">{question?.question}</div>
-              <ul>
-                {question?.options?.map((option, i) => (
-                  <li key={i} className="mb-5">
-                    <pre>{option}</pre>
-                  </li>
-                ))}
-              </ul>
-              <div>{question?.answer}</div>
-              <button
-                className="btn-primary btn"
-                onClick={() =>
-                  void handleNext(
-                    getStoryOutcome(question?.answer === question?.answer)
-                  )
-                }
+          ) : (
+            <>
+              <div
+                className="p-2"
+                style={{
+                  height: "200px",
+                  overflow: "scroll",
+                  background: "black",
+                  color: "white",
+                  borderRadius: 8,
+                }}
               >
-                Correct Answer
-              </button>
-              <button
-                className="btn-primary btn"
-                onClick={() =>
-                  void handleNext(
-                    getStoryOutcome(question?.answer !== question?.answer)
-                  )
-                }
-              >
-                Incorrect Answer
-              </button>
-              <Link className="btn-primary btn" type="button" href="/">
-                Play again?
-              </Link>
-            </div>
-          </>
-        )}{" "}
+                <div>{allAnswers.length}</div>
+                <ul>
+                  {displayText.map((text, i) => (
+                    <li key={i} className="mb-5">
+                      {text}
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-5">
+                  <progress className="progress progress-info flex w-56 justify-center"></progress>
+                </div>
+                <div style={{ float: "left", clear: "both" }} ref={myRef}></div>
+              </div>
+              <div className="w-50 bg-white">
+                <div className="my-3 text-xl font-bold">
+                  {question?.question}
+                </div>
+                <ul>
+                  {question?.options?.map((option, i) => (
+                    <li key={i} className="mb-5">
+                      <label className="label cursor-pointer justify-start">
+                        <input
+                          type="radio"
+                          name="radio-2"
+                          className="radio-primary radio"
+                          onClick={() => setAnswer(answerMap[i]?.value)}
+                        />
+                        <span className="label-text">{option}</span>
+                      </label>
+                    </li>
+                  ))}
+                </ul>
+
+                <button
+                  className="btn-primary btn"
+                  onClick={() =>
+                    void handleNext(
+                      getStoryOutcome(answer === question?.answer)
+                    )
+                  }
+                >
+                  Submit
+                </button>
+
+                <button
+                  className="btn-primary btn"
+                  onClick={() =>
+                    void handleNext(
+                      getStoryOutcome(question?.answer === question?.answer)
+                    )
+                  }
+                >
+                  Correct Answer
+                </button>
+                <button
+                  className="btn-primary btn"
+                  onClick={() =>
+                    void handleNext(
+                      getStoryOutcome(question?.answer !== question?.answer)
+                    )
+                  }
+                >
+                  Incorrect Answer
+                </button>
+                <Link className="btn-primary btn" type="button" href="/">
+                  Play again?
+                </Link>
+              </div>
+            </>
+          )}{" "}
+        </div>
       </div>
     </div>
   );
@@ -204,6 +262,7 @@ export async function getServerSideProps({ req }) {
     scene: "Desert",
     villainImage: "/images/avatars/MODOK/img-J7lP2m93lbDITd1fiqKcJAgW.png",
     heroImage: "/images/avatars/Green Thumb/img-K1HK0jB5CDU95SeI8tCxOx1m.png",
+    sceneryImage: "/images/scenery/img-F0cofIBKZeu2yYbdAdzovnsA.png",
     language: "TypeScript",
   };
   if (req.method == "POST") {

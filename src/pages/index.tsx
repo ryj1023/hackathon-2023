@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { type Language } from "~/server/api/schemas";
 import AvatarSelector from "~/components/AvatarSelector";
-// import BackgroundImage from "~/images/image-background.png";
+import ScenerySelector from "~/components/ScenerySelector";
 import Image from "next/image";
 
 const RogerStoryTestPage = () => {
@@ -14,10 +14,10 @@ const RogerStoryTestPage = () => {
   const [villainImage, setVillainImage] = useState<string>(
     "/images/avatars/MODOK/img-J7lP2m93lbDITd1fiqKcJAgW.png"
   );
+  const [sceneryImage, setSceneryImage] = useState<string>(
+    "/images/avatars/MODOK/img-J7lP2m93lbDITd1fiqKcJAgW.png"
+  );
   const [scene, setScene] = useState<string>("");
-
-  console.log("heroImage", heroImage);
-  console.log("villainImage", villainImage);
 
   const LANGUAGES = [
     "TypeScript",
@@ -93,13 +93,36 @@ const RogerStoryTestPage = () => {
             </div>
             <div className="flex">
               <div className="mr-2">
-                <h2>Scene</h2>
+                {/* <h2>Scene</h2>
                 <input
                   name="scene"
                   className="input-bordered input w-64"
                   value={scene}
                   onChange={(e) => setScene(e.target.value)}
+                /> */}
+
+                <h2>Scene</h2>
+                <input
+                  className="input-bordered input mb-2 w-64"
+                  value={scene}
+                  onChange={(e) => setScene(e.target.value)}
                 />
+                <input
+                  style={{ display: "none" }}
+                  name="sceneryImage"
+                  className="d-none"
+                  value={sceneryImage}
+                  onChange={() => {}}
+                />
+                <ScenerySelector
+                  label={scene || "Desert"}
+                  onSelect={setSceneryImage}
+                />
+                {/* <AvatarSelector
+                    type="Hero"
+                    onSelect={setHeroImage}
+                    name={heroName}
+                  /> */}
               </div>
               <div className="mb-5 ml-2">
                 <h2>Language</h2>
