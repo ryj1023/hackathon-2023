@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useState } from "react";
+import QuestionDisplay from "~/components/QuestionDisplay";
 import { type QuestionReturn } from "~/server/api/routers/questioner";
 import { type Language } from "~/server/api/schemas";
 
@@ -27,6 +28,17 @@ const RogerStoryTestPage = () => {
      });
 
     setQuestion(question);
+  };
+
+  const handleCorrect = (correctAnswser: string) => {
+    console.log('CORRECT!', correctAnswser)
+  };
+  const handleIncorrect = (correctAnswer: string) => {
+    console.log('WRONG!', correctAnswer)
+  };
+
+  const handleFinshedAnimation = () => {
+    console.log('FINISHED ANIMATION!')
   };
 
   return (
@@ -64,20 +76,12 @@ const RogerStoryTestPage = () => {
           Next Question
         </button>
       </div>
-      <div>
-        <div className="text-xl font-bold my-3">
-          {question?.question}
-        </div>
-        <ul>
-          {question?.options?.map((option, i) => (
-            <li key={i} className="mb-5"><pre>{option}</pre></li>
-          ))}
-        </ul>
-        <div>
-          {question?.answer}
-        </div>
-
-      </div>
+      {question && <QuestionDisplay
+        question={question}
+        onCorrect={handleCorrect}
+        onIncorrect={handleIncorrect}
+        onFinshedAnimation={handleFinshedAnimation}
+      />}
     </div>
   )
 }
