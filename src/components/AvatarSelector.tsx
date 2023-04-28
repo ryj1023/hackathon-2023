@@ -21,7 +21,7 @@ const colors = [
 ];
 
 const AvatarSelector = ({ type, name, onSelect }: AvatarSelectorProps) => {
-  const avatars = api.images.list.useQuery();
+  const avatars = api.images.listAvatars.useQuery();
 
   const imageGenerators = {
     Hero: api.images.newHero.useMutation(),

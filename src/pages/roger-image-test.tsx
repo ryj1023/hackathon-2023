@@ -1,8 +1,10 @@
 import { useState } from "react";
 import AvatarSelector from "~/components/AvatarSelector";
+import ScenerySelector from "~/components/ScenerySelector";
 
 const RogerImageTestPage = () => {
   const [heroName, setHeroName] = useState<string>("");
+  const [scene, setScene] = useState<string>("");
 
   return (
     <div className="m-5 flex flex-col">
@@ -20,6 +22,15 @@ const RogerImageTestPage = () => {
         type="Villain"
         onSelect={console.log}
         name={heroName}
+      />
+
+      <div className="flex flex-col">
+        <h2>Scene</h2>
+        <input className="input input-bordered" value={scene} onChange={(e) => setScene(e.target.value)} />
+      </div>
+      <ScenerySelector
+        label={scene}
+        onSelect={console.log}
       />
 
     </div>
