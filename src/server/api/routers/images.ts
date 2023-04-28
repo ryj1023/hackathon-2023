@@ -21,8 +21,11 @@ const downloadAndSaveImage = async (url: string, path: string) => {
 const AVATAR_FOLDER = 'images/avatars';
 const PUBLIC_AVATAR_FOLDER = `./public/${AVATAR_FOLDER}`;
 
+const SCENEREY_FOLDER = 'images/scenery';
+const PUBLIC_SCENERY_FOLDER = `./public/${SCENEREY_FOLDER}`;
+
 export const imagesRouter = createTRPCRouter({
-  list: publicProcedure
+  listAvatars: publicProcedure
     .query(async () => {
       const nameEntries = await readdir(resolve(PUBLIC_AVATAR_FOLDER), { withFileTypes: true });
 
@@ -101,5 +104,47 @@ export const imagesRouter = createTRPCRouter({
       return images
         .filter(isFulfilled)
         .map(r => `/${path}/${r.value}`);
+    }),
+
+  newScenery: publicProcedure
+    .input(z.object({
+      label: z.string().min(1),
+    }))
+    .mutation(async ({ input, ctx }) => {
+      const prompt = `A background image depticting '${input.label}', realistic, digital art.`;
+
+      const res = await ctx.openai.createImage({
+        prompt,
+        size: '1024x1024',
+        n: 1,
+      });
+      const urls = res.data.data.map(d => d.url).filter(exists);
+
+      const path = SCENEREY_FOLDER;
+
+      // ensure the folder exists
+      await mkdir(resolve(PUBLIC_SCENERY_FOLDER), { recursive: true });
+
+      const downloadToPath = (url: string) => downloadAndSaveImage(url, path);
+
+      // fetch and store the images locally
+      const images = await Promise.allSettled(urls.map(downloadToPath));
+
+      console.log('images', images)
+
+      return images
+        .filter(isFulfilled)
+        .map(r => `/${path}/${r.value}`);
+    }),
+
+  listScenery: publicProcedure
+    .query(async () => {
+      const imageEntries = await readdir(resolve(PUBLIC_SCENERY_FOLDER), { withFileTypes: true });
+
+      const images = imageEntries
+        .filter(e => e.isFile())
+        .map(e => `/${SCENEREY_FOLDER}/${e.name}`);
+
+      return images;
     }),
 });

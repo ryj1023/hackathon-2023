@@ -21,7 +21,7 @@ const colors = [
 ]
 
 const AvatarSelector = ({ type, name, onSelect }: AvatarSelectorProps) => {
-  const avatars = api.images.list.useQuery();
+  const avatars = api.images.listAvatars.useQuery();
 
   const imageGenerators = {
     'Hero': api.images.newHero.useMutation(),
@@ -50,7 +50,7 @@ const AvatarSelector = ({ type, name, onSelect }: AvatarSelectorProps) => {
       samples: 1,
       backgroundColor: color,
     });
-    if (url) selectUrl(url);
+    if (url) selectUrl(url)();
     
     await avatars.refetch();
   };
